@@ -1,6 +1,11 @@
 package NotePackage;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.List;
 
 public class TestHelper {
 	
@@ -9,17 +14,49 @@ public class TestHelper {
 	
 	//test variable declarations test messages are insert BY the helper, input by the unit tests
 	
-	public String[] testMessages() {
-		String[] messages = { "Hello this is a test entry", "Jack is cool","Im Wrtiting one with l3tters numb34s and @ybol$",
-							  "punctuation;;::{}||?><>~", "numbers1234567890","  lots  of  sp  a c e s", "CATPITALLETTERS", "'willbreak'the'database'" };
-		return messages;		
+	public Message[] setTestMessages() {
+		Message message1 = new Message("Hello this is a test entry", 
+									   "11/11/2011 14:40", 
+									   "JackIsCool");
+		Message message2 = new Message("Im Wrtiting one with l3tters numb34s and @ybol$", 
+									   "21/12/2011 15:30", 
+									   "DurainInTheMainframe");
+		Message message3 = new Message("punctuation;;::{}||?><>~", 
+									   "21/12/2011 16:40", 
+									   "all1234567890Nums");
+		Message message4 = new Message("numbers1234567890", 
+									   "08/06/2017 00:00", 
+									   "and!@£$%^&*()_+-={}[]|::");
+		Message[] messageList = { message1, message2, message3, message4 };
+		return messageList;
 	}
 	
-	public String[] inputMessages() {
-		String[] messages = { "this is a test message", "numbers 1234567890", "symbols !@£$%^&*()_+=[]{};:,<.>/?~", "CAPITals", "advanced sumbols ''\"\" " };
-		return messages;
+	public Message[] setInputMessages() {
+		Message message1 = new Message("this is a test message",
+									   "09/12/2018 12:25",
+									   "JackIsCool");
+		Message message2 = new Message("numbers 1234567890",
+									   "09/12/2018 12:25",
+									   "JackIsCool");
+		Message message3 = new Message("symbols !@£$%^&*()_+=[]{};:,<.>/?~",
+									   "10/12/2018 12:25",
+									   "JackIsCool");
+		Message message4 = new Message("CAPITals",
+									   "01/01/2019 12:25",
+									   "DurainInTheMainframe");
+		Message[] messageList = { message1, message2, message3, message4 };
+		return messageList;
 	}
 	
+	public User[] addTestUsers() {
+		User user1 = new User("JackIsCool","123qweasdzx");
+		User user2 = new User("DurainInTheMainframe", "thisisac00lpas4word");
+		User user3 = new User("all1234567890Nums", "nomore4akepa@@word$");
+		User user4 = new User("and!@£$%^&*()_+-={}[]|::", "  space$ ar% inTHis*&$NC");
+		User[] userList = { user1, user2, user3, user4 };
+		return userList;
+	} 
+	 
 	public void createConnection() {
 		
 		try {
@@ -30,10 +67,19 @@ public class TestHelper {
 	}
 	
 	public void addTestDataToDb() {
-		String command = "INSERT INTO messages (message) VALUES ('" + testMessages()[0] + "');";
+		User[]testUsers = addTestUsers();
 		try {
 			Statement statement = connect.createStatement();
-			statement.execute(command);
+			for(int i = 0; i < setTestMessages().length - 1; i++) {
+				statement.execute("INSERT INTO messages (message, time, username) VALUES ('" + setTestMessages()[i].messageText + "', '" 
+																						     + setTestMessages()[i].messageTime + "', '" 
+																						     + setTestMessages()[i].messageUser + "');");
+			}
+			for(int i = 0; i < addTestUsers().length; i++) {
+				statement.execute("INSERT INTO users (username, password) VALUES ('" + testUsers[i].username + "','" 
+																					 + testUsers[i].password + "');");
+						
+			}
 			statement.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -42,7 +88,7 @@ public class TestHelper {
 	
 	public void clearDatabase() {
 		try {
-			PreparedStatement statement = connect.prepareStatement("TRUNCATE " + "messages");
+			PreparedStatement statement = connect.prepareStatement("TRUNCATE messages;TRUNCATE users");
 			statement.execute();
 			statement.close();
 			connect.close();

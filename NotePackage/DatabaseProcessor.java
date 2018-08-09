@@ -5,6 +5,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
 
 public class DatabaseProcessor {
 
@@ -14,32 +17,75 @@ public class DatabaseProcessor {
 		createConnection();
 	}
 		
-	public String readMessage() {
+	public List<Hashtable> readData(String table, String username) {
+		
+		List<Hashtable> messageList = new ArrayList<Hashtable>();
+		int resultIndexCounter = 0;
 		
 		try {
 			Statement statement = connection.createStatement();
-			ResultSet result = statement.executeQuery("SELECT * FROM messages");
+			ResultSet result;
+			// switch to toggle read one or all users data - none means all users data
+			if(username == "none") {
+				result = statement.executeQuery("SELECT * FROM " + table );
+			}
+			else {
+				result = statement.executeQuery("SELECT * FROM " + table + " where username LIKE '" + username + "'");
+			}
+			
 			while(result.next()) {
-				return result.getString(2);
+				if(table == "users") {
+					
+				}
+				else {
+					
+				}
 			}
 		}
 		catch(SQLException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
+			throw new IllegalArgumentException("table not found");
 		}
-		
-		
-		return "";
+		return messageList;
 	}
 	
-	public void writeMessage(String text) {
-		String command = "INSERT INTO messages (message) VALUES ('" + text + "') ;";
+	public void writeMessage(Message message, String table) {
+		String command = "INSERT INTO " + table + " (message, time, username) VALUES ('" + message.messageText + "', '"
+																					 + message.messageTime + "', '"
+																					 + message.messageUser + "') ;";
 		try {
 			Statement statement = connection.createStatement();
 			statement.execute(command);
 			statement.close();
 			
 		} catch (SQLException e) {
-			e.printStackTrace();
+			// e.printStackTrace();
+			throw new IllegalArgumentException("table not found");
+		}
+	}
+	
+	public void writeUser(String text, String table) {
+		String command = "INSERT INTO " + table + " (username) VALUES ('" + text + "') ;";
+		try {
+			Statement statement = connection.createStatement();
+			statement.execute(command);
+			statement.close();
+			
+		} catch (SQLException e) {
+			// e.printStackTrace();
+			throw new IllegalArgumentException("table not found");
+		}
+	}
+	
+	public void deleteData(String table) {
+		String command = "DELETE FROM " + table ;
+		try {
+			Statement statement = connection.createStatement();
+			statement.execute(command);
+			statement.close();
+		} catch(SQLException e) {
+			// e.printStackTrace();
+			throw new IllegalArgumentException("table not found");
 		}
 	}
 	
@@ -52,5 +98,4 @@ public class DatabaseProcessor {
 			e.printStackTrace();
 		}
 	}
-	
 }
