@@ -1,4 +1,4 @@
-package notePackage;
+package noteAppPackage;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -76,6 +76,19 @@ public class DatabaseProcessor {
 			// e.printStackTrace();
 			throw new IllegalArgumentException("table not found");
 		}
+	}
+	
+	public void updateUserPassword(String username, String newPassword) {
+		String command = "UPDATE users SET password = '" + newPassword + "' WHERE username = '" 
+														 + username  + "';";
+		try {
+			Statement statement = connection.createStatement();
+			statement.executeQuery(command);
+		} catch(SQLException e) {
+			e.printStackTrace();
+			throw new IllegalArgumentException("username invalid");
+		}
+		
 	}
 	
 	public void deleteUserData(String username, boolean isAllData) {

@@ -1,4 +1,4 @@
-package notePackage;
+package noteAppPackage;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -77,6 +77,15 @@ class DatabseProcessor_test {
 		assertEquals("Im a test user!", dbProcessor.readData("users", "none").get(8));
 		assertEquals("testpassword", dbProcessor.readData("users", "none").get(9));
 	}
+
+	//update tests
+	
+	@Test
+	void canUpdateUserName() {
+		String newPassword = "thisIsATestPassword";
+		dbProcessor.updateUserPassword("JackIsCool", newPassword);
+		assertEquals(newPassword, dbProcessor.readData("users", "JackIsCool").get(1));
+	}
 	
 	// deletion tests
 	
@@ -104,7 +113,7 @@ class DatabseProcessor_test {
 		assertTrue(dbProcessor.readData("messages", "none").isEmpty());
 		assertTrue(dbProcessor.readData("users", "none").isEmpty());
 	}
-	
+
 	// bad input tests
 	
 	@Test

@@ -1,4 +1,4 @@
-package notePackage;
+package noteAppPackage;
 
 import static org.junit.jupiter.api.Assertions.*;
 

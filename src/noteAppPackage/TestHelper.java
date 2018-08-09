@@ -1,4 +1,4 @@
-package notePackage;
+package noteAppPackage;
 
 import java.sql.*;
 import java.util.ArrayList;
