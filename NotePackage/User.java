@@ -1,4 +1,4 @@
-package NotePackage;
+package notePackage;
 
 public class User {
 	
@@ -8,5 +8,4 @@ public class User {
 		this.username = username;
 		this.password = password;
 	}
-	
 }

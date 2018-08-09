@@ -1,6 +1,7 @@
-package NotePackage;
+package notePackage;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,5 +29,5 @@ class Message_test {
 	void getMessageUser() {
 		assertEquals("JackIsCool", message.messageUser);
 	}
-
+	
 }

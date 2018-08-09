@@ -1,20 +1,17 @@
-package NotePackage;
+package notePackage;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -23,6 +20,7 @@ class DatabseProcessor_test {
 	static Connection connect;
 	DatabaseProcessor dbProcessor;
 	TestHelper helper = new TestHelper();
+	ArrayList<String>expectedData = new ArrayList<String>();
 	
 	@BeforeEach
 	void initialize() {
@@ -35,52 +33,76 @@ class DatabseProcessor_test {
 	
 	@Test
 	void canReadMessageTestData() {
-		for(int i = 0; i < helper.setTestMessages().length - 1; i++) {
-			//assertEquals(helper.setTestMessages()[i], dbProcessor.readData("messages", "none").get(i));
-		}
+		expectedData = helper.getTestMessagesAsArray();
+		assertEquals(expectedData, dbProcessor.readData("messages", "none"));
 	}
 	
 	@Test
 	void canWriteNewMessageData() {
+		expectedData = helper.getInputMessagesAsArray();
 		Message message = helper.setInputMessages()[0];
 		dbProcessor.writeMessage(message, "messages");
-		//assertEquals(helper.setInputMessages()[0], dbProcessor.readData("messages", "none").get(7));
+		assertEquals(expectedData.get(0), dbProcessor.readData("messages", "none").get(12));
+		assertEquals(expectedData.get(1), dbProcessor.readData("messages", "none").get(13));
+		assertEquals(expectedData.get(2), dbProcessor.readData("messages", "none").get(14));
 	}
 	
 	@Test
 	void canReadAllUserTestData() {
-		List<Hashtable> result = dbProcessor.readData("users", "none");
-		int length = result.size();
-		for(int i = 0; i < length; i++) {
-			
-		}
+		expectedData = helper.getusersAsArray();
+		assertEquals(expectedData, dbProcessor.readData("users", "none"));
 	}
 	
 	// single user tests
 	
 	@Test 
 	void canReadSingleUserLogin() {
-		String[] expectedData = { "JackIsCool", "123qweasdzx" };
-		assertEquals( expectedData[0], dbProcessor.readData("users", "JackIsCool").get(0));
-		assertEquals( expectedData[1], dbProcessor.readData("users", "JackIsCool").get(1));
+		expectedData.add(helper.getusersAsArray().get(0));
+		expectedData.add(helper.getusersAsArray().get(1));
+		assertEquals(expectedData, dbProcessor.readData("users", "JackIsCool"));
 	}
 	
 	@Test 
 	void singleUserCanReadAllMsg() {
-		
+		expectedData = helper.getTestMessagesAsArray();
+		assertEquals(expectedData.get(3), dbProcessor.readData("messages", "DurainInTheMainframe").get(0));
+		assertEquals(expectedData.get(4), dbProcessor.readData("messages", "DurainInTheMainframe").get(1));
+		assertEquals(expectedData.get(5), dbProcessor.readData("messages", "DurainInTheMainframe").get(2));
 	}
 	
 	@Test
 	void canWriteUserData() {
-		String testUser = "im a test user!";
+		User testUser = new User("Im a test user!", "testpassword");
 		dbProcessor.writeUser(testUser, "users");
-		// assertEquals(testUser, dbProcessor.readData("users", "none").get(4));
+		assertEquals("Im a test user!", dbProcessor.readData("users", "none").get(8));
+		assertEquals("testpassword", dbProcessor.readData("users", "none").get(9));
+	}
+	
+	// deletion tests
+	
+	@Test 
+	void canDeleteAllOneUsersData() {
+		dbProcessor.deleteUserData("JackIsCool", true);
+		assertTrue(dbProcessor.readData("messages", "JackIsCool").isEmpty());
+		assertTrue(dbProcessor.readData("users", "JackIsCool").isEmpty());
+		assertFalse(dbProcessor.readData("messages", "none").isEmpty());
+		assertFalse(dbProcessor.readData("users", "none").isEmpty());
+	}
+	
+	@Test 
+	void canDeleteAllOneUsersMessages() {
+		dbProcessor.deleteUserData("JackIsCool", false);
+		assertTrue(dbProcessor.readData("messages", "JackIsCool").isEmpty());
+		assertFalse(dbProcessor.readData("users", "JackIsCool").isEmpty());
+		assertFalse(dbProcessor.readData("messages", "none").isEmpty());
 	}
 	
 	@Test
-	void canDeleteMessages() {
-		dbProcessor.deleteData("messages");
+	void canDeleteAllstoredData() {
+		dbProcessor.deleteAllData("messages");
+		dbProcessor.deleteAllData("users");
 		assertTrue(dbProcessor.readData("messages", "none").isEmpty());
+		assertTrue(dbProcessor.readData("users", "none").isEmpty());
 	}
 	
 	// bad input tests
@@ -107,14 +129,9 @@ class DatabseProcessor_test {
 	}
 	
 	@Test
-	void writeThrowsErrorWhenUserInvalid() {
-		
-	}
-	
-	@Test
 	void deleteThrowsExceptionWithInvalidInput() {
 		try {
-			dbProcessor.deleteData("fakeTable");
+			dbProcessor.deleteAllData("fakeTable");
 			fail("no exception thrown");
 		} catch(IllegalArgumentException e) {
 			assertThat(e.getMessage(), is("table not found")) ;

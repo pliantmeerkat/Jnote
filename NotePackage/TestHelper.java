@@ -1,11 +1,7 @@
-package NotePackage;
+package notePackage;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
 
 public class TestHelper {
 	
@@ -48,6 +44,28 @@ public class TestHelper {
 		return messageList;
 	}
 	
+	public ArrayList<String> getTestMessagesAsArray() {
+		ArrayList<String> messageList = new ArrayList<String>();
+		Message[] testMessages = setTestMessages();
+		for(int i = 0; i < 4; i ++) {
+			messageList.add(testMessages[i].messageText);
+			messageList.add(testMessages[i].messageTime);
+			messageList.add(testMessages[i].messageUser);
+		}
+		return messageList;
+	}
+	
+	public ArrayList<String> getInputMessagesAsArray() {
+		ArrayList<String> messageList = new ArrayList<String>();
+		Message[] inputMessage = setInputMessages();
+		for(int i = 0; i < 4; i ++) {
+			messageList.add(inputMessage[i].messageText);
+			messageList.add(inputMessage[i].messageTime);
+			messageList.add(inputMessage[i].messageUser);
+		}
+		return messageList;
+	}
+	
 	public User[] addTestUsers() {
 		User user1 = new User("JackIsCool","123qweasdzx");
 		User user2 = new User("DurainInTheMainframe", "thisisac00lpas4word");
@@ -56,6 +74,16 @@ public class TestHelper {
 		User[] userList = { user1, user2, user3, user4 };
 		return userList;
 	} 
+	
+	public ArrayList<String> getusersAsArray() {
+		ArrayList<String> messageList = new ArrayList<String>();
+		User[] testUsers = addTestUsers();
+		for(int i = 0; i < 4; i ++) {
+			messageList.add(testUsers[i].username);
+			messageList.add(testUsers[i].password);
+		}
+		return messageList;
+	}
 	 
 	public void createConnection() {
 		
@@ -70,7 +98,7 @@ public class TestHelper {
 		User[]testUsers = addTestUsers();
 		try {
 			Statement statement = connect.createStatement();
-			for(int i = 0; i < setTestMessages().length - 1; i++) {
+			for(int i = 0; i < setTestMessages().length; i++) {
 				statement.execute("INSERT INTO messages (message, time, username) VALUES ('" + setTestMessages()[i].messageText + "', '" 
 																						     + setTestMessages()[i].messageTime + "', '" 
 																						     + setTestMessages()[i].messageUser + "');");

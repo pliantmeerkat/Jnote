@@ -1,4 +1,4 @@
-package NotePackage;
+package notePackage;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,5 +23,4 @@ class User_test {
 	void getUserPassword() {
 		assertEquals("123qweasdzx", user.password);
 	}
-
 }

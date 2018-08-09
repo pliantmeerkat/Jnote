@@ -1,4 +1,4 @@
-package NotePackage;
+package notePackage;
 
 public class Message {
 	

@@ -1,4 +1,4 @@
-package NotePackage;
+package notePackage;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -6,8 +6,6 @@ import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
 
 public class DatabaseProcessor {
 
@@ -17,10 +15,9 @@ public class DatabaseProcessor {
 		createConnection();
 	}
 		
-	public List<Hashtable> readData(String table, String username) {
-		
-		List<Hashtable> messageList = new ArrayList<Hashtable>();
-		int resultIndexCounter = 0;
+	public ArrayList<String> readData(String table, String username) {
+
+		ArrayList<String> resultArray = new ArrayList<String>();
 		
 		try {
 			Statement statement = connection.createStatement();
@@ -35,10 +32,13 @@ public class DatabaseProcessor {
 			
 			while(result.next()) {
 				if(table == "users") {
-					
+					resultArray.add(result.getString(2));
+					resultArray.add(result.getString(3));
 				}
 				else {
-					
+					resultArray.add(result.getString(2));
+					resultArray.add(result.getString(3));
+					resultArray.add(result.getString(4));
 				}
 			}
 		}
@@ -46,13 +46,13 @@ public class DatabaseProcessor {
 			//e.printStackTrace();
 			throw new IllegalArgumentException("table not found");
 		}
-		return messageList;
+		return resultArray;
 	}
 	
 	public void writeMessage(Message message, String table) {
 		String command = "INSERT INTO " + table + " (message, time, username) VALUES ('" + message.messageText + "', '"
-																					 + message.messageTime + "', '"
-																					 + message.messageUser + "') ;";
+																					     + message.messageTime + "', '"
+																					     + message.messageUser + "') ;";
 		try {
 			Statement statement = connection.createStatement();
 			statement.execute(command);
@@ -64,8 +64,9 @@ public class DatabaseProcessor {
 		}
 	}
 	
-	public void writeUser(String text, String table) {
-		String command = "INSERT INTO " + table + " (username) VALUES ('" + text + "') ;";
+	public void writeUser(User user, String table) {
+		String command = "INSERT INTO " + table + " (username, password) VALUES ('" + user.username + "','"
+											                                        + user.password + "') ;";
 		try {
 			Statement statement = connection.createStatement();
 			statement.execute(command);
@@ -77,7 +78,23 @@ public class DatabaseProcessor {
 		}
 	}
 	
-	public void deleteData(String table) {
+	public void deleteUserData(String username, boolean isAllData) {
+		try { 
+			Statement statement = connection.createStatement();
+			String messageCommand = "Delete From messages WHERE username LIKE '" + username + "';";
+			if(isAllData) {
+				String userCommand = "Delete From users WHERE username LIKE '" + username + "';";
+				statement.execute(userCommand);
+			}
+			statement.execute(messageCommand);
+			statement.close();
+		} catch(SQLException e) {
+			// e.printStackTrace();
+			throw new IllegalArgumentException("username invalid");
+		}
+	}
+	
+	public void deleteAllData(String table) {
 		String command = "DELETE FROM " + table ;
 		try {
 			Statement statement = connection.createStatement();
