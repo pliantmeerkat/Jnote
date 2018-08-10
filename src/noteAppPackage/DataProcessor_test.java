@@ -4,22 +4,19 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
-import org.junit.After;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class DataProcessor_test {
 	
-	static DataProcessor dataProcessor;
+	
 	TestHelper helper = new TestHelper();
 	
 	@BeforeEach
 	void initialize() {
-		dataProcessor = new DataProcessor();
 		helper.createConnection();
 		helper.addTestDataToDb();
-		//dataProcessor = new DataProcessor();
 	}
 	
 	// read methods
@@ -43,7 +40,17 @@ class DataProcessor_test {
 	
 	@Test 
 	void canReadAllOneUsersMessages() {
-		// Message[] messages = { helper.setTestMessages()[0], helper.setInputMessages()[0] };
+		// write a new message to database
+		Message testMessage = helper.setInputMessages()[0];
+		DataProcessor.writeUserMessage(testMessage.messageText, testMessage.messageTime, testMessage.messageUser);
+		Message[] testmessageList = { helper.setTestMessages()[0], helper.setInputMessages()[0] };
+		List<Message> resultMessageList = DataProcessor.getUserMessageList("JackIsCool");
+		assertEquals(testmessageList[0].messageText, resultMessageList.get(0).messageText);
+		assertEquals(testmessageList[0].messageTime, resultMessageList.get(0).messageTime);
+		assertEquals(testmessageList[0].messageUser, resultMessageList.get(0).messageUser);
+		assertEquals(testmessageList[1].messageText, resultMessageList.get(1).messageText);
+		assertEquals(testmessageList[1].messageTime, resultMessageList.get(1).messageTime);
+		assertEquals(testmessageList[1].messageUser, resultMessageList.get(1).messageUser);
 	}
 	
 	// write methods
@@ -59,37 +66,16 @@ class DataProcessor_test {
 	
 	@Test 
 	void canWriteAMssageCorrectly() {
-		
+		Message testMessage = helper.setInputMessages()[0];
+		DataProcessor.writeUserMessage(testMessage.messageText, testMessage.messageTime, testMessage.messageUser);
+		Message resultMessage = DataProcessor.getUserMessageList("JackIsCool").get(1);
+		assertEquals(testMessage.messageText, resultMessage.messageText);
+		assertEquals(testMessage.messageTime, resultMessage.messageTime);
+		assertEquals(testMessage.messageUser, resultMessage.messageUser);
 	}
 	
-	//login methods
+	// new user methods
 	
-	@Test
-	void RecognisesUserNames() {
-		
-	}
-	
-	@Test
-	void canLoginAUserWithCorrectPassword() {
-		
-	}
-	
-	// Authentication methods
-	
-	@Test
-	void RejectsLoginWithNoUsername() {
-		
-	}
-	
-	@Test 
-	void RejectsBadPassword() {
-		
-	}
-	
-	@Test
-	void RejectsUserNameWithWorngPassword() {
-		
-	}
 	
 	@AfterEach
 	void clearTestDatabase() {

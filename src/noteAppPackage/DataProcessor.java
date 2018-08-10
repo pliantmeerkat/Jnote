@@ -15,8 +15,11 @@ public class DataProcessor {
 			ArrayList<String> result = dbProcessor.readData("users", username);
 			user1 = new User(result.get(0), result.get(1));
 			
+			
 		} catch(IllegalArgumentException e){
-			throw new IllegalArgumentException("User not found");
+			
+			e.printStackTrace();
+			throw new IllegalArgumentException("user creation faliure");
 			
 		} catch(NullPointerException e) {
 			e.printStackTrace();
@@ -26,7 +29,9 @@ public class DataProcessor {
 	}
 	
 	public static void WriteUser(String username, String password) {
-		
+		User newUser = new User(username, password);
+		// verification code
+		dbProcessor.writeUser(newUser, "users");
 	}
 	
 	// message functions
@@ -48,6 +53,12 @@ public class DataProcessor {
 		}
 		
 		return userMessageList;
+	}
+	
+	public static void writeUserMessage(String text, String date, String username) {
+		Message newMessage = new Message(text, date, username);
+		// verification code
+		dbProcessor.writeMessage(newMessage, "messages");
 	}
 	
 	private static List<Message> convertDbResultToMessages(ArrayList<String> result) {
