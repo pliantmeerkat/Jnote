@@ -44,6 +44,13 @@ public class TestHelper {
 		return messageList;
 	}
 	
+	public String outputStringMessage(String time) {
+		String output;
+		output = time + "\n";
+		output += setInputMessages()[0].messageText;
+		return output;
+	}
+	
 	public ArrayList<String> getTestMessagesAsArray() {
 		ArrayList<String> messageList = new ArrayList<String>();
 		Message[] testMessages = setTestMessages();
@@ -63,7 +70,7 @@ public class TestHelper {
 			messageList.add(inputMessage[i].messageTime);
 			messageList.add(inputMessage[i].messageUser);
 		}
-		return messageList;
+		return messageList; 
 	}
 	
 	public User[] addTestUsers() {

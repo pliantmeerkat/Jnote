@@ -33,7 +33,7 @@ public class DataProcessor {
 		// verification code
 		dbProcessor.writeUser(newUser, "users");
 	}
-	
+	 
 	// message functions
 	
 	public static List<Message> getUserMessageList(String username) {
@@ -45,6 +45,7 @@ public class DataProcessor {
 			userMessageList = convertDbResultToMessages(result);
 			
 		} catch(IllegalArgumentException e){
+			e.printStackTrace();
 			throw new IllegalArgumentException("User not found");
 			
 		} catch(NullPointerException e) {
@@ -59,6 +60,14 @@ public class DataProcessor {
 		Message newMessage = new Message(text, date, username);
 		// verification code
 		dbProcessor.writeMessage(newMessage, "messages");
+	}
+	
+	public static void deleteUserMessageData(String username) {
+		dbProcessor.deleteUserData(username, false);
+	}
+	
+	public static void deleteUserData(String username) {
+		dbProcessor.deleteUserData(username, true);
 	}
 	
 	private static List<Message> convertDbResultToMessages(ArrayList<String> result) {

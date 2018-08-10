@@ -14,12 +14,18 @@ public class RuntimeSession {
 		this.activeUser = null;
 		this.activeMessages = new ArrayList<Message>();
 	}
-	
+	 
 	public void loginUser(String username, String password) {
 		
 		validateUser(username, password);
 		
 		this.activeUser = new User(username, password);
+		//this.activeUser = new User("JackIsCool", "123qweasdzx");
+		try {
+			getUserMessages();
+		} catch(IllegalArgumentException e) {
+			throw new NullPointerException("account has no messages");
+		}
 	}
 	
 	public void logoutActiveUser() {
@@ -36,6 +42,20 @@ public class RuntimeSession {
 		this.activeMessages = DataProcessor.getUserMessageList(this.activeUser.username);
 	}
 	
+	public String setuserMessagesAsString() {
+		String output = "";
+		
+		// loop over message array
+		for(int i = 0; i < this.activeMessages.size(); i ++) {
+			output += this.activeMessages.get(i).messageTime;
+			output += "\n";
+			output += this.activeMessages.get(i).messageText;
+			output += "\n";
+		}
+		getUserMessages();
+		return output;
+	}
+	
 	public void sendUserMessage(String text) {
 		
 		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");  
@@ -47,7 +67,13 @@ public class RuntimeSession {
 		}
 		
 		DataProcessor.writeUserMessage(text, messageDate, this.activeUser.username);
+		getUserMessages();
 		
+	}
+	
+	public void deleteUserMessageData() {
+		DataProcessor.deleteUserMessageData(this.activeUser.username);
+		this.activeMessages.clear();
 	}
 	
 	private void validateUser(String username, String password) {

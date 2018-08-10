@@ -54,7 +54,7 @@ class RuntimeSession_test {
 			assertThat(e.getMessage(), is("password format invalid")) ;
 		}
 	}
-	
+	 
 	@Test
 	void cannotLoginIfNoUsernameentered() {
 		try {
@@ -96,6 +96,22 @@ class RuntimeSession_test {
 		session.getUserMessages();
 		assertEquals(session.activeMessages.get(1).messageText, testMessage.messageText);
 		assertEquals(session.activeMessages.get(1).messageTime, messageDate);
+	}
+	
+	@Test 
+	void canConvertMessagesToOutputString() {
+		LocalDateTime sendDate = LocalDateTime.now();
+		String messageDate = dateFormatter.format(sendDate);
+		session.loginUser(realUser.username, realUser.password);
+		session.sendUserMessage("this is a test message");
+		//assertEquals(session.setuserMessagesAsString(), helper.outputStringMessage(messageDate));
+	}
+	
+	@Test
+	void canDeleteUserMessages() {
+		session.loginUser(realUser.username, realUser.password);
+		session.deleteUserMessageData();
+		assertTrue(session.activeMessages.isEmpty());
 	}
 	
 	@Test

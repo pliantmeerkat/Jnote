@@ -61,6 +61,10 @@ public class NoteAppGui {
 	 * Initialise the contents of the frame.
 	 */
 	private void initialize() {
+		
+		// class object initialization
+		RuntimeSession session = new RuntimeSession();
+		
 		frame = new JFrame();
 		frame.setBounds(100, 100, 800, 650);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -75,15 +79,33 @@ public class NoteAppGui {
 		JPanel panel_1 = new JPanel();
 		panel_1.setBackground(new Color(204, 255, 255));
 		
-		JTextPane messageDisplay = new JTextPane();
+		JTextPane messageDisplay = new JTextPane(); // list of user messages
 		messageDisplay.setDropMode(DropMode.INSERT);
-		messageDisplay.setEditable(false);
+		messageDisplay.setEditable(false); 
 		
-		JTextPane messageInput = new JTextPane();
+		JTextPane messageInput = new JTextPane(); // stores a new message
 		
-		JButton buttonSendMessage = new JButton("Submit");
+		JLabel labelHello = new JLabel("");
+		labelHello.setHorizontalAlignment(SwingConstants.CENTER);
 		
-		JButton buttonLogout = new JButton("Logout");
+		JButton buttonSendMessage = new JButton("Submit"); // submit message
+		buttonSendMessage.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String message = messageInput.getText();
+				session.sendUserMessage(message);
+				String messages = session.setuserMessagesAsString();
+				messageDisplay.setText(messages);
+			}
+		});
+		
+		JButton buttonLogout = new JButton("Logout"); // active user logout
+		buttonLogout.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				labelHello.setText("");
+				messageDisplay.setText("");
+				messageInput.setText("");
+			}
+		});
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
@@ -91,12 +113,14 @@ public class NoteAppGui {
 					.addContainerGap()
 					.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 195, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+					.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING)
 						.addComponent(messageDisplay, GroupLayout.DEFAULT_SIZE, 581, Short.MAX_VALUE)
 						.addComponent(messageInput, GroupLayout.DEFAULT_SIZE, 581, Short.MAX_VALUE)
-						.addGroup(Alignment.TRAILING, gl_panel.createSequentialGroup()
+						.addGroup(gl_panel.createSequentialGroup()
 							.addComponent(buttonLogout, GroupLayout.PREFERRED_SIZE, 196, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED, 189, Short.MAX_VALUE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(labelHello, GroupLayout.PREFERRED_SIZE, 175, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED, 8, Short.MAX_VALUE)
 							.addComponent(buttonSendMessage, GroupLayout.PREFERRED_SIZE, 196, GroupLayout.PREFERRED_SIZE)))
 					.addContainerGap())
 		);
@@ -104,32 +128,47 @@ public class NoteAppGui {
 			gl_panel.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_panel.createSequentialGroup()
 					.addContainerGap()
-					.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING)
+					.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING, false)
+						.addComponent(panel_1, Alignment.LEADING, 0, 0, Short.MAX_VALUE)
 						.addGroup(gl_panel.createSequentialGroup()
 							.addComponent(messageInput, GroupLayout.PREFERRED_SIZE, 180, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
-								.addComponent(buttonSendMessage, GroupLayout.PREFERRED_SIZE, 27, GroupLayout.PREFERRED_SIZE)
-								.addComponent(buttonLogout, GroupLayout.PREFERRED_SIZE, 27, GroupLayout.PREFERRED_SIZE))
+							.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+								.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
+									.addComponent(buttonSendMessage, GroupLayout.PREFERRED_SIZE, 27, GroupLayout.PREFERRED_SIZE)
+									.addComponent(buttonLogout, GroupLayout.PREFERRED_SIZE, 27, GroupLayout.PREFERRED_SIZE))
+								.addComponent(labelHello, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE))
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(messageDisplay, GroupLayout.PREFERRED_SIZE, 372, GroupLayout.PREFERRED_SIZE)
-							.addGap(29))
-						.addComponent(panel_1, GroupLayout.DEFAULT_SIZE, 620, Short.MAX_VALUE))
-					.addContainerGap())
+							.addComponent(messageDisplay, GroupLayout.PREFERRED_SIZE, 372, GroupLayout.PREFERRED_SIZE)))
+					.addGap(29))
 		);
 		
-		textUsername = new JTextField();
+		textUsername = new JTextField(); // user input field
 		textUsername.setColumns(10);
 		
-		textPassword = new JPasswordField();
+		textPassword = new JPasswordField(); // user password input
 		
 		JLabel lblNewLabel = new JLabel("Username");
 		
 		JLabel lblPassword = new JLabel("Password");
 		
-		JButton buttonLogin = new JButton("Login");
+		JButton buttonLogin = new JButton("Login"); // login feature
+		buttonLogin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				messageDisplay.setText("");
+				String username = textUsername.getText();
+				String password = String.valueOf(textPassword.getPassword());
+				labelHello.setText("Hello " + username);	
+				session.loginUser(username, password);
+				String messages = session.setuserMessagesAsString();
+				messageDisplay.setText(messages);
+			}
+		});
 		
-		JLabel lblNewLabel_1 = new JLabel("JNote");
+		
+		
+		JLabel lblNewLabel_1 = new JLabel("JNote"); // logo
 		lblNewLabel_1.setFont(new Font("Kokonor", Font.BOLD | Font.ITALIC, 31));
 		lblNewLabel_1.setForeground(Color.BLUE);
 		lblNewLabel_1.setHorizontalAlignment(SwingConstants.CENTER);
@@ -173,11 +212,21 @@ public class NoteAppGui {
 		panel_1.setLayout(gl_panel_1);
 		panel.setLayout(gl_panel);
 		
+		// menu bar items
+		
 		JMenuBar menuBar = new JMenuBar();
-		frame.setJMenuBar(menuBar);
+		frame.setJMenuBar(menuBar); 
 		
 		JMenu mnFile = new JMenu("File");
 		menuBar.add(mnFile);
+		
+		JButton menuDeleteButton = new JButton("Delete Messages");
+		menuDeleteButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				session.deleteUserMessageData();
+			}
+		});
+		mnFile.add(menuDeleteButton);
 		
 		JMenu mnView = new JMenu("View");
 		menuBar.add(mnView);
