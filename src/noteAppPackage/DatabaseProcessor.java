@@ -46,6 +46,9 @@ public class DatabaseProcessor {
 			//e.printStackTrace();
 			throw new IllegalArgumentException("table not found");
 		}
+		if(resultArray.isEmpty()) {
+			throw new IllegalArgumentException("User not found");
+		}
 		return resultArray;
 	}
 	
